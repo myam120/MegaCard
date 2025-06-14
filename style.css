@@ -1,0 +1,36 @@
+ body {
+      background-color: #121212;
+      color: #f1f1f1;
+    }
+    .card-icon {
+      font-size: 2rem;
+    }
+    .navbar-brand {
+      font-weight: bold;
+    }
+    .btn-orange {
+      background-color: #ff9800;
+      border: none;
+      color: white;
+    }
+
+    .btn-orange:hover {
+      background-color: #ffa733;
+    }
+
+    .card-premio {
+      background-color: #1e1e1e;
+      border: 1px solid #ff980050;
+      border-radius: 10px;
+    }
+
+    .table thead {
+      color: #ffc107;
+    }
+
+    @media (max-width: 768px) {
+
+      .premio-card-container {
+        display: block;
+      }
+    }
