@@ -1,0 +1,10 @@
+   body {
+        background-color: #201f1f;
+        color: white;
+    }
+    .card-icon {
+      font-size: 2rem;
+    }
+    .navbar-brand {
+      font-weight: bold;
+    }
