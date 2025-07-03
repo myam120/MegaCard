@@ -34,30 +34,39 @@ switch ($method) {
         break;
 
     case 'POST':
-        if (!is_array($data)) responder("error", "❌ No se pudo decodificar el JSON");
+    if (!is_array($data)) responder("error", "❌ No se pudo decodificar el JSON");
 
-        $campos = ['nombre_cliente', 'apellidos_cliente', 'direccion_cliente', 'correo_cliente', 'telefono_cliente', 'estado_cliente', 'ciudad_cliente', 'puntos_cliente'];
-        foreach ($campos as $campo) {
-            if (empty($data[$campo])) responder("error", "❌ Falta el campo: $campo");
-        }
+    $campos = ['nombre_cliente', 'apellidos_cliente', 'direccion_cliente', 'correo_cliente', 'telefono_cliente', 'estado_cliente', 'ciudad_cliente', 'puntos_cliente'];
+    foreach ($campos as $campo) {
+        if (empty($data[$campo])) responder("error", "❌ Falta el campo: $campo");
+    }
 
-        try {
-            $stmt = $conn->prepare("INSERT INTO clientes (nombre_cliente, apellidos_cliente, direccion_cliente, correo_cliente, telefono_cliente, estado_cliente, ciudad_cliente, puntos_cliente) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([
-                $data['nombre_cliente'],
-                $data['apellidos_cliente'],
-                $data['direccion_cliente'],
-                $data['correo_cliente'],
-                $data['telefono_cliente'],
-                $data['estado_cliente'],
-                $data['ciudad_cliente'],
-                $data['puntos_cliente']
-            ]);
-            responder("mensaje", "✅ Cliente creado con éxito");
-        } catch (PDOException $e) {
-            responder("error", $e->getMessage());
-        }
-        break;
+    try {
+        $stmt = $conn->prepare("INSERT INTO clientes (nombre_cliente, apellidos_cliente, direccion_cliente, correo_cliente, telefono_cliente, estado_cliente, ciudad_cliente, puntos_cliente) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([
+            $data['nombre_cliente'],
+            $data['apellidos_cliente'],
+            $data['direccion_cliente'],
+            $data['correo_cliente'],
+            $data['telefono_cliente'],
+            $data['estado_cliente'],
+            $data['ciudad_cliente'],
+            $data['puntos_cliente']
+        ]);
+
+        // Obtener el ID del nuevo registro
+        $nuevoId = $conn->lastInsertId();
+
+        // Consultar los datos del nuevo cliente
+        $stmt = $conn->prepare("SELECT * FROM clientes WHERE id_cliente = ?");
+        $stmt->execute([$nuevoId]);
+        $nuevoCliente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        responder("cliente", $nuevoCliente);
+    } catch (PDOException $e) {
+        responder("error", $e->getMessage());
+    }
+    break;
 
     case 'PUT':
         if (!isset($_GET['id'])) responder("error", "❌ Falta el parámetro id en la URL");
@@ -92,7 +101,7 @@ switch ($method) {
         try {
             $stmt = $conn->prepare("DELETE FROM clientes WHERE id_cliente = ?");
             $stmt->execute([$_GET['id']]);
-            responder("mensaje", "✅ Cliente eliminado");
+           responder("mensaje", "✅ Cliente ID({$_GET['id']}) eliminado");
         } catch (PDOException $e) {
             responder("error", $e->getMessage());
         }
