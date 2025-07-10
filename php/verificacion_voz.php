@@ -35,7 +35,7 @@
 <body>
   <div class="container">
     <h1>Verificación por Voz</h1>
-    <p>Haz clic en el botón y di en voz alta: <strong>"Confirmar acceso a Megacard"</strong></p>
+    <p>Haz clic en el botón y di en voz alta: <strong>"Confirmar acceso"</strong></p>
     <button class="btn btn-warning" onclick="iniciarReconocimiento()">🎤 Verificar mi voz</button>
     <p id="resultado"></p>
   </div>
@@ -51,11 +51,11 @@
         const texto = event.results[0][0].transcript.toLowerCase();
         document.getElementById('resultado').textContent = `Has dicho: "${texto}"`;
 
-        if (texto.includes("confirmar acceso a megacard")) {
+        if (texto.includes("confirmar acceso")) {
           const destino = localStorage.getItem("destino") || "login.php";
           window.location.href = destino;
         } else {
-          document.getElementById('resultado').textContent += " ❌ Intenta decir exactamente: confirmar acceso a megacard";
+          document.getElementById('resultado').textContent += " ❌ Intenta decir exactamente: confirmar acceso";
         }
       };
 
