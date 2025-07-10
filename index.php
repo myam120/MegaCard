@@ -1,8 +1,8 @@
 <?php
-session_start();
-$mensaje = "";
+  session_start();
+  $mensaje = "";
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+  if ($_SERVER["REQUEST_METHOD"] === "POST") {
     require 'php/db.php';
 
     $telefono = $_POST['usuario'] ?? '';
@@ -15,7 +15,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if ($stmt->rowCount() > 0) {
         $_SESSION['rol'] = 'Administrador';
-        header("Location: admin/principal.php");
+        $_SESSION['telefono'] = $telefono;
+        echo "<script>localStorage.setItem('destino', '../admin/principal.php');</script>";
+        echo "<script>window.location.href = 'php/verificacion_voz.php';</script>";
         exit;
     }
 
@@ -27,12 +29,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($stmt->rowCount() > 0) {
         $_SESSION['rol'] = 'Cliente';
         $_SESSION['telefono'] = $telefono;
-        header("Location: cliente/principal.php");
+        echo "<script>localStorage.setItem('destino', '../cliente/principal.php');</script>";
+        echo "<script>window.location.href = 'php/verificacion_voz.php';</script>";
         exit;
     }
 
     $mensaje = "❌ Credenciales incorrectas.";
-}
+  }
 ?>
 
 <!DOCTYPE html>
@@ -101,11 +104,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       <div class="col-md-6 d-flex justify-content-center align-items-center p-4">
         <div class="card login-card p-4 w-100" style="max-width: 500px; height: 100%;">
           <h2 class="text-center mb-4" style="color: #ffc107; margin-top: 20%;">Iniciar sesión</h2>
+
+            <?php if (!empty($mensaje)) echo "<div id='mensaje' class='text-danger'>$mensaje</div>"; ?>
+
           <form method="POST" class="form">
             <div class="mb-3">
               <label for="usuario" class="form-label">Teléfono</label>
               <input type="text" class="form-control bg-dark text-white border-warning" id="usuario" name="usuario"
-                placeholder="Ingresa tu usuario" />
+                placeholder="Ingresa tu número" maxlength="10" pattern="\d{10}" aotofocus required/>
             </div>
 
             <div class="mb-3">
@@ -122,6 +128,46 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       </div>
     </div>
   </div>
-</body>
+   <!-- ✅ Autenticación por voz -->
+  <script>
+    const rol = "<?php echo $_SESSION['rol'] ?? ''; ?>";
+    const redirigir = {
+      'Administrador': 'admin/principal.php',
+      'Cliente': 'cliente/principal.php'
+    };
 
+    if (rol && !sessionStorage.getItem("voz_confirmada")) {
+      alert("🗣 Autenticación por voz requerida. Di: 'sí soy yo' o 'acceder'.");
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+
+      recognition.lang = 'es-ES';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+
+      recognition.onresult = function (event) {
+        const voz = event.results[0][0].transcript.toLowerCase();
+        console.log("Texto reconocido:", voz);
+
+        const aceptadas = ["sí soy yo", "acceder", "confirmo mi identidad"];
+
+        if (aceptadas.some(frase => voz.includes(frase))) {
+          sessionStorage.setItem("voz_confirmada", true);
+          window.location.href = redirigir[rol];
+        } else {
+          alert("❌ Voz no reconocida correctamente. Intenta de nuevo.");
+          sessionStorage.removeItem("voz_confirmada");
+        }
+      };
+
+      recognition.onerror = function (event) {
+        console.error("Error de reconocimiento:", event.error);
+        alert("❌ Hubo un error al reconocer tu voz. Intenta nuevamente.");
+      };
+    }
+  </script>
+</body>
 </html>
