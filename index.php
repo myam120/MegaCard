@@ -1,8 +1,15 @@
 <?php
+<<<<<<< HEAD
   session_start();
   $mensaje = "";
 
   if ($_SERVER["REQUEST_METHOD"] === "POST") {
+=======
+session_start();
+$mensaje = "";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+>>>>>>> b41b3eca61513294f8e9c26aab7b0956142a8b3c
     require 'php/db.php';
 
     $telefono = $_POST['usuario'] ?? '';
@@ -15,9 +22,13 @@
 
     if ($stmt->rowCount() > 0) {
         $_SESSION['rol'] = 'Administrador';
+<<<<<<< HEAD
         $_SESSION['telefono'] = $telefono;
         echo "<script>localStorage.setItem('destino', '../admin/principal.php');</script>";
         echo "<script>window.location.href = 'php/verificacion_voz.php';</script>";
+=======
+        header("Location: admin/principal.php");
+>>>>>>> b41b3eca61513294f8e9c26aab7b0956142a8b3c
         exit;
     }
 
@@ -29,13 +40,21 @@
     if ($stmt->rowCount() > 0) {
         $_SESSION['rol'] = 'Cliente';
         $_SESSION['telefono'] = $telefono;
+<<<<<<< HEAD
         echo "<script>localStorage.setItem('destino', '../cliente/principal.php');</script>";
         echo "<script>window.location.href = 'php/verificacion_voz.php';</script>";
+=======
+        header("Location: cliente/principal.php");
+>>>>>>> b41b3eca61513294f8e9c26aab7b0956142a8b3c
         exit;
     }
 
     $mensaje = "❌ Credenciales incorrectas.";
+<<<<<<< HEAD
   }
+=======
+}
+>>>>>>> b41b3eca61513294f8e9c26aab7b0956142a8b3c
 ?>
 
 <!DOCTYPE html>
@@ -104,14 +123,21 @@
       <div class="col-md-6 d-flex justify-content-center align-items-center p-4">
         <div class="card login-card p-4 w-100" style="max-width: 500px; height: 100%;">
           <h2 class="text-center mb-4" style="color: #ffc107; margin-top: 20%;">Iniciar sesión</h2>
+<<<<<<< HEAD
 
             <?php if (!empty($mensaje)) echo "<div id='mensaje' class='text-danger'>$mensaje</div>"; ?>
 
+=======
+>>>>>>> b41b3eca61513294f8e9c26aab7b0956142a8b3c
           <form method="POST" class="form">
             <div class="mb-3">
               <label for="usuario" class="form-label">Teléfono</label>
               <input type="text" class="form-control bg-dark text-white border-warning" id="usuario" name="usuario"
+<<<<<<< HEAD
                 placeholder="Ingresa tu número" maxlength="10" pattern="\d{10}" aotofocus required/>
+=======
+                placeholder="Ingresa tu usuario" />
+>>>>>>> b41b3eca61513294f8e9c26aab7b0956142a8b3c
             </div>
 
             <div class="mb-3">
@@ -128,6 +154,7 @@
       </div>
     </div>
   </div>
+<<<<<<< HEAD
    <!-- ✅ Autenticación por voz -->
   <script>
     const rol = "<?php echo $_SESSION['rol'] ?? ''; ?>";
@@ -170,4 +197,8 @@
     }
   </script>
 </body>
+=======
+</body>
+
+>>>>>>> b41b3eca61513294f8e9c26aab7b0956142a8b3c
 </html>
